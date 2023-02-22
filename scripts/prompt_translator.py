@@ -32,6 +32,7 @@ import json
 import modules
 from modules import script_callbacks
 from scripts.services import GoogleTranslationService
+from deep_translator import GoogleTranslator
 
 # from modules import images
 # from modules.processing import process_images, Processed
@@ -54,6 +55,10 @@ trans_providers = {
         "url":"https://translation.googleapis.com",
         "has_id": False
     },
+    "google_free": {
+        "url":"https://translation.googleapis.com",
+        "has_id": False
+    },    
 }
 
 # user's translation service setting
@@ -73,6 +78,11 @@ trans_setting = {
         "app_id": "",
         "app_key": ""
     },
+    "google_free": {
+        "is_default":False,
+        "app_id": "",
+        "app_key": ""
+    },    
 }
 
 # user config file
@@ -233,6 +243,14 @@ def baidu_trans(app_id, app_key, text):
     return translated_text
 
 
+def google_free_trans(app_id, app_key, text):
+    print("Getting data for google free")
+    if not text:
+        print("text can not be empty")
+        return ""
+    
+    return GoogleTranslator(source='auto', target='en').translate(text) 
+
 # do translation
 # parameter: provider, app_id, app_key, text
 # return: translated_text
@@ -256,6 +274,8 @@ def do_trans(provider, app_id, app_key, text):
     elif provider == "google":
         service = GoogleTranslationService(app_key)
         translated_text = service.translate(text=text)
+    elif provider == "google_free":
+        translated_text = google_free_trans(app_id, app_key, text)
     else:
         print("can not find provider: ")
         print(provider)
